@@ -60,5 +60,25 @@ describe("Given I am connected as an employee", () => {
 
       expect(onNavigate).toHaveBeenCalledWith("#employee/bill/new");
     });
+    test("Then clicking on the icon eye,a modal should open", () => {
+      const onNavigate = jest.fn();
+      const store = null;
+      const bill = new Bills({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      });
+
+      document.body.innerHTML = BillsUI(bills[0]);
+      const handleClickIconEye = jest.fn(bill.handleClickIconEye);
+      const eye = screen.getByTestId("icon-eye");
+      eye.addEventListener("click", handleClickIconEye);
+      userEvent.click(eye);
+      expect(handleClickIconEye).toHaveBeenCalled();
+
+      const modale = screen.getByTestId("modaleFile");
+      expect(modale).toBeTruthy();
+    });
   });
 });
