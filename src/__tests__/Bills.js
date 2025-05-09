@@ -9,6 +9,8 @@ import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 
 import router from "../app/Router.js";
+import userEvent from "@testing-library/user-event";
+import Bills from "../containers/Bills.js";
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -41,6 +43,22 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => (a < b ? 1 : -1);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
+    });
+    test("Then clicking on 'New Bill' button should navigate to NewBill page", async () => {
+      const onNavigate = jest.fn();
+      document.body.innerHTML = `<button data-testid="btn-new-bill">New</button>`;
+
+      new Bills({
+        document,
+        onNavigate,
+        store: null,
+        localStorage: window.localStorage,
+      });
+
+      const newBillBtn = screen.getByTestId("btn-new-bill");
+      userEvent.click(newBillBtn);
+
+      expect(onNavigate).toHaveBeenCalledWith("#employee/bill/new");
     });
   });
 });
