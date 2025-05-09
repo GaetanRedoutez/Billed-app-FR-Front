@@ -60,12 +60,13 @@ describe("Given I am connected as an employee", () => {
 
       expect(onNavigate).toHaveBeenCalledWith("#employee/bill/new");
     });
-    test("Then clicking on the icon eye, a modal should open", async () => {
+    test("Then clicking on the icon eye, a modal should open", () => {
       document.body.innerHTML = BillsUI({ data: bills });
 
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
+
       const store = null;
       const bill = new Bills({
         document,
@@ -74,14 +75,22 @@ describe("Given I am connected as an employee", () => {
         localStorage: window.localStorage,
       });
 
-      const handleClickIconEye = jest.fn(bill.handleClickIconEye);
-      const eye = screen.getAllByTestId("icon-eye");
-      eye[0].addEventListener("click", handleClickIconEye);
-      userEvent.click(eye[0]);
-      expect(handleClickIconEye).toHaveBeenCalled();
+      $.fn.modal = jest.fn();
 
-      const modale = await waitFor(() => screen.getByTestId("modaleFile"));
-      expect(modale).toBeTruthy();
+      const eyeIcons = screen.getAllByTestId("icon-eye");
+      const firstIcon = eyeIcons[0];
+
+      const expectedUrl = firstIcon.getAttribute("data-bill-url");
+
+      bill.handleClickIconEye(firstIcon);
+
+      expect($.fn.modal).toHaveBeenCalledWith("show");
+
+      const img = document.querySelector(".bill-proof-container img");
+
+      expect(img).toBeTruthy();
+      expect(img.getAttribute("src")).toBe(expectedUrl);
+      expect(img.getAttribute("alt")).toBe("Bill");
     });
   });
 });
