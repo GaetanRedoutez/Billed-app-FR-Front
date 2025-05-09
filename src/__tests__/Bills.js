@@ -5,7 +5,7 @@
 import { screen, waitFor } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
-import { ROUTES_PATH } from "../constants/routes.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 
 import router from "../app/Router.js";
@@ -60,8 +60,12 @@ describe("Given I am connected as an employee", () => {
 
       expect(onNavigate).toHaveBeenCalledWith("#employee/bill/new");
     });
-    test("Then clicking on the icon eye,a modal should open", () => {
-      const onNavigate = jest.fn();
+    test("Then clicking on the icon eye, a modal should open", async () => {
+      document.body.innerHTML = BillsUI({ data: bills });
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
       const store = null;
       const bill = new Bills({
         document,
@@ -70,14 +74,13 @@ describe("Given I am connected as an employee", () => {
         localStorage: window.localStorage,
       });
 
-      document.body.innerHTML = BillsUI(bills[0]);
       const handleClickIconEye = jest.fn(bill.handleClickIconEye);
-      const eye = screen.getByTestId("icon-eye");
-      eye.addEventListener("click", handleClickIconEye);
-      userEvent.click(eye);
+      const eye = screen.getAllByTestId("icon-eye");
+      eye[0].addEventListener("click", handleClickIconEye);
+      userEvent.click(eye[0]);
       expect(handleClickIconEye).toHaveBeenCalled();
 
-      const modale = screen.getByTestId("modaleFile");
+      const modale = await waitFor(() => screen.getByTestId("modaleFile"));
       expect(modale).toBeTruthy();
     });
   });
