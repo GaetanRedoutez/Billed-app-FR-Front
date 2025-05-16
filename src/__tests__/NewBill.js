@@ -28,7 +28,7 @@ describe("Given I am connected as an employee", () => {
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-    test("Then I select a valid file, store.bills().create is called", async () => {
+    test("Then should upload valid file and update instance", async () => {
       const onNavigate = jest.fn();
 
       Object.defineProperty(window, "localStorage", {
@@ -65,7 +65,7 @@ describe("Given I am connected as an employee", () => {
         expect(newBillInstance.fileName).toBe("test.jpg");
       });
     });
-    test("Then I select an invalid file, should alert and reset input", async () => {
+    test("Then should alert and reset input on invalid file", async () => {
       const onNavigate = jest.fn();
 
       Object.defineProperty(window, "localStorage", {
