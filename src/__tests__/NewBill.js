@@ -28,7 +28,7 @@ describe("Given I am connected as an employee", () => {
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-    test("When I select a valid file, then store.bills().create is called", async () => {
+    test("Then I select a valid file, store.bills().create is called", async () => {
       const onNavigate = jest.fn();
 
       Object.defineProperty(window, "localStorage", {
@@ -64,6 +64,47 @@ describe("Given I am connected as an employee", () => {
         expect(mockCreate).toHaveBeenCalled();
         expect(newBillInstance.fileName).toBe("test.jpg");
       });
+    });
+    test("Then I select an invalid file, should alert and reset input", async () => {
+      const onNavigate = jest.fn();
+
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+
+      const html = NewBillUI();
+      document.body.innerHTML = html;
+
+      const alertMock = jest
+        .spyOn(window, "alert")
+        .mockImplementation(() => {});
+
+      new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+
+      const inputFile = screen.getByTestId("file");
+
+      const file = new File(["bad file extension"], "test.txt", {
+        type: "text/plain",
+      });
+
+      fireEvent.change(inputFile, { target: { files: [file] } });
+
+      expect(alertMock).toHaveBeenCalledWith(
+        "Seuls les fichiers .jpg, .jpeg, .png sont autorisés."
+      );
+
+      expect(inputFile.value).toBe("");
     });
   });
 });
