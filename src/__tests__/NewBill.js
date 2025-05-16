@@ -106,5 +106,61 @@ describe("Given I am connected as an employee", () => {
 
       expect(inputFile.value).toBe("");
     });
+    test("Then should call updateBill with the correct bill", () => {
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({ type: "Employee", email: "a@a" })
+      );
+      document.body.innerHTML = NewBillUI();
+
+      const newBillInstance = new NewBill({
+        document,
+        onNavigate: jest.fn(),
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+
+      const updateFn = jest.spyOn(newBillInstance, "updateBill");
+
+      fireEvent.change(screen.getByTestId("expense-type"), {
+        target: { value: "Transports" },
+      });
+      fireEvent.change(screen.getByTestId("expense-name"), {
+        target: { value: "test" },
+      });
+      fireEvent.change(screen.getByTestId("amount"), {
+        target: { value: "100" },
+      });
+      fireEvent.change(screen.getByTestId("datepicker"), {
+        target: { value: "2025-05-16" },
+      });
+      fireEvent.change(screen.getByTestId("vat"), { target: { value: "80" } });
+      fireEvent.change(screen.getByTestId("pct"), { target: { value: "20" } });
+      fireEvent.change(screen.getByTestId("commentary"), {
+        target: { value: "commentary" },
+      });
+
+      newBillInstance.fileUrl = "https://localhost/test.jpg";
+      newBillInstance.fileName = "test.jpg";
+
+      fireEvent.submit(screen.getByTestId("form-new-bill"));
+
+      expect(updateFn).toHaveBeenCalledWith({
+        email: JSON.parse(localStorage.getItem("user")).email,
+        type: "Transports",
+        name: "test",
+        amount: 100,
+        date: "2025-05-16",
+        vat: "80",
+        pct: 20,
+        commentary: "commentary",
+        fileUrl: "https://localhost/test.jpg",
+        fileName: "test.jpg",
+        status: "pending",
+      });
+    });
   });
 });
