@@ -163,4 +163,41 @@ describe("Given I am connected as an employee", () => {
       });
     });
   });
+  describe("When an error occurs on API", () => {
+    test("fails with 404 error message", async () => {
+      jest.spyOn(console, "error").mockImplementation(() => {});
+      jest.spyOn(mockStore, "bills").mockImplementationOnce(() => ({
+        update: () => Promise.reject(new Error("Erreur 404")),
+      }));
+
+      const form = screen.getByTestId("form-new-bill");
+      fireEvent.submit(form);
+
+      await new Promise(process.nextTick);
+
+      expect(console.error).toHaveBeenCalledWith(expect.any(Error));
+      expect(console.error.mock.calls[0][0].message).toBe("Erreur 404");
+
+      console.error.mockRestore();
+      mockStore.bills.mockRestore();
+    });
+
+    test("fails with 500 error message", async () => {
+      jest.spyOn(console, "error").mockImplementation(() => {});
+      jest.spyOn(mockStore, "bills").mockImplementationOnce(() => ({
+        update: () => Promise.reject(new Error("Erreur 500")),
+      }));
+
+      const form = screen.getByTestId("form-new-bill");
+      fireEvent.submit(form);
+
+      await new Promise(process.nextTick);
+
+      expect(console.error).toHaveBeenCalledWith(expect.any(Error));
+      expect(console.error.mock.calls[0][0].message).toBe("Erreur 500");
+
+      console.error.mockRestore();
+      mockStore.bills.mockRestore();
+    });
+  });
 });
