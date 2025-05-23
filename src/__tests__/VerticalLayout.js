@@ -22,14 +22,14 @@ describe("Given I am connected as Employee", () => {
 describe("Given I am connected as non-Employee", () => {
   test("Then only disconnect icon should be rendered", () => {
     Object.defineProperty(window, "localStorage", { value: localStorageMock });
-    const user = JSON.stringify({ type: "Manager" });
+    const user = JSON.stringify({ type: "Admin" });
     window.localStorage.setItem("user", user);
 
     const html = VerticalLayout(120);
     document.body.innerHTML = html;
 
-    expect(screen.queryByTestId("icon-window")).toBeNull();
-    expect(screen.queryByTestId("icon-mail")).toBeNull();
+    expect(screen.queryByTestId("icon-window")).toBeFalsy();
+    expect(screen.queryByTestId("icon-mail")).toBeFalsy();
     expect(screen.getByTestId("layout-disconnect")).toBeTruthy();
   });
 });
@@ -42,8 +42,8 @@ describe("Given there is no user in localStorage", () => {
     const html = VerticalLayout(120);
     document.body.innerHTML = html;
 
-    expect(screen.queryByTestId("icon-window")).toBeNull();
-    expect(screen.queryByTestId("icon-mail")).toBeNull();
+    expect(screen.queryByTestId("icon-window")).toBeFalsy();
+    expect(screen.queryByTestId("icon-mail")).toBeFalsy();
     expect(screen.getByTestId("layout-disconnect")).toBeTruthy();
   });
 });
