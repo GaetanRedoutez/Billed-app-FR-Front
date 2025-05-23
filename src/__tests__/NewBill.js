@@ -3,14 +3,10 @@
  */
 
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
-import userEvent from "@testing-library/user-event";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
-import router from "../app/Router";
-import { ROUTES, ROUTES_PATH } from "../constants/routes";
-import { bills } from "../fixtures/bills";
-import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
+import NewBillUI from "../views/NewBillUI.js";
 
 jest.mock("../app/Store", () => mockStore);
 
