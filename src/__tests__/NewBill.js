@@ -7,6 +7,7 @@ import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
 import NewBill from "../containers/NewBill.js";
 import NewBillUI from "../views/NewBillUI.js";
+import { ROUTES_PATH } from "../constants/routes.js";
 
 jest.mock("../app/Store", () => mockStore);
 
@@ -106,7 +107,7 @@ describe("Given I am connected as an employee", () => {
     });
   });
   describe("When I submit form", () => {
-    test("Then should call updateBill with the correct bill", () => {
+    test("Then should call updateBill with the correct bill and navigate on Bills page", () => {
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
@@ -116,9 +117,10 @@ describe("Given I am connected as an employee", () => {
       );
       document.body.innerHTML = NewBillUI();
 
+      const onNavigate = jest.fn((pathname) => pathname);
       const newBillInstance = new NewBill({
         document,
-        onNavigate: jest.fn(),
+        onNavigate,
         store: mockStore,
         localStorage: window.localStorage,
       });
@@ -161,6 +163,7 @@ describe("Given I am connected as an employee", () => {
         fileName: "test.jpg",
         status: "pending",
       });
+      expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"]);
     });
   });
   describe("When an error occurs on API", () => {
