@@ -5,9 +5,10 @@ import DisconnectIcon from "../assets/svg/disconnect.js";
 export default (height) => {
   let user = null;
 
-  user = JSON.parse(localStorage.getItem("user") || "null");
-  if (user) user = JSON.parse(user);
-
+  try {
+    user = JSON.parse(localStorage.getItem("user") || "null");
+    if (typeof user === "string") user = JSON.parse(user);
+  } catch {}
   if (user && user.type === "Employee") {
     return `
         <div class='vertical-navbar' style='height: ${height}vh;'>
